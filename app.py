@@ -1,121 +1,112 @@
 import streamlit as st
 import pandas as pd
 import joblib
-import requests
 import time
-from streamlit_lottie import st_lottie
 
-# ---------------- Page Configuration ----------------
+# ---------------- PAGE CONFIG ----------------
 st.set_page_config(
     page_title="Student Performance Prediction",
     page_icon="🎓",
     layout="wide"
 )
 
-# ---------------- CSS ----------------
+# ---------------- CUSTOM CSS ----------------
 st.markdown("""
 <style>
 .main{
-    background-color:#f8f9fa;
+    background-color:#f5f7fa;
 }
 h1{
     text-align:center;
-    color:#0E76A8;
+    color:#1565C0;
 }
 .stButton>button{
     width:100%;
-    background:#0E76A8;
+    background-color:#1565C0;
     color:white;
     font-size:20px;
     border-radius:10px;
     height:50px;
 }
 .stButton>button:hover{
-    background:#065A82;
+    background-color:#0D47A1;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- Load Fireworks Animation ----------------
-def load_lottie(url):
-    r = requests.get(url)
-    if r.status_code != 200:
-        return None
-    return r.json()
+# ---------------- LOAD MODEL ----------------
+try:
+    model = joblib.load("student_model.pkl")
+    scaler = joblib.load("student_scaler.pkl")
+except Exception as e:
+    st.error(f"Error loading model: {e}")
+    st.stop()
 
-fireworks = load_lottie(
-    "https://assets2.lottiefiles.com/packages/lf20_touohxv0.json"
-)
-
-# ---------------- Load Model ----------------
-model = joblib.load("student_model.pkl")
-scaler = joblib.load("student_scaler.pkl")
-
-# ---------------- Sidebar ----------------
+# ---------------- SIDEBAR ----------------
 st.sidebar.title("🎓 Student Performance Prediction")
-st.sidebar.success("Machine Learning Project")
-st.sidebar.write("""
-Model Used:
+st.sidebar.markdown("""
+### Machine Learning Project
+
+**Model Used**
 - Logistic Regression
 
-Technology:
+**Developed Using**
 - Python
 - Streamlit
 - Scikit-learn
 """)
 
-# ---------------- Title ----------------
+# ---------------- TITLE ----------------
 st.title("🎓 Student Performance Prediction System")
-st.write("Fill all the details and click **Predict Result**.")
+st.write("Enter the student's details below and click **Predict Result**.")
 
-# ---------------- Input ----------------
+# ---------------- INPUTS ----------------
 col1, col2 = st.columns(2)
 
 with col1:
-    age = st.number_input("Age",10,30,18)
+    age = st.number_input("Age", 10, 30, 18)
 
-    gender = st.selectbox("Gender",["Male","Female"])
-    gender = 1 if gender=="Male" else 0
+    gender = st.selectbox("Gender", ["Male", "Female"])
+    gender = 1 if gender == "Male" else 0
 
-    student_class = st.number_input("Class",1,12,10)
+    student_class = st.number_input("Class", 1, 12, 10)
 
-    study_hours = st.number_input("Study Hours Per Day",0.0,24.0,4.0)
+    study_hours = st.number_input("Study Hours Per Day", 0.0, 24.0, 4.0)
 
-    attendance = st.number_input("Attendance Percentage",0,100,80)
+    attendance = st.number_input("Attendance Percentage", 0, 100, 80)
 
     parent = st.selectbox(
         "Parental Education",
-        ["High School","Graduate","Post Graduate"]
+        ["High School", "Graduate", "Post Graduate"]
     )
 
-    edu={
-        "High School":0,
-        "Graduate":1,
-        "Post Graduate":2
+    edu = {
+        "High School": 0,
+        "Graduate": 1,
+        "Post Graduate": 2
     }
 
 with col2:
+    internet = st.selectbox("Internet Access", ["No", "Yes"])
+    internet = 1 if internet == "Yes" else 0
 
-    internet = st.selectbox("Internet Access",["No","Yes"])
-    internet = 1 if internet=="Yes" else 0
+    activity = st.selectbox("Extracurricular Activities", ["No", "Yes"])
+    activity = 1 if activity == "Yes" else 0
 
-    activity = st.selectbox("Extracurricular Activities",["No","Yes"])
-    activity = 1 if activity=="Yes" else 0
+    math = st.number_input("Math Score", 0, 100, 70)
 
-    math = st.number_input("Math Score",0,100,70)
+    science = st.number_input("Science Score", 0, 100, 70)
 
-    science = st.number_input("Science Score",0,100,70)
+    english = st.number_input("English Score", 0, 100, 70)
 
-    english = st.number_input("English Score",0,100,70)
+    previous = st.number_input("Previous Year Score", 0, 100, 70)
 
-    previous = st.number_input("Previous Year Score",0,100,70)
+    final_percentage = st.number_input("Final Percentage", 0, 100, 75)
 
-    final = st.number_input("Final Percentage",0,100,75)
-
-# ---------------- Prediction ----------------
+# ---------------- PREDICTION ----------------
 if st.button("🚀 Predict Result"):
 
-    data = pd.DataFrame([[
+    input_data = pd.DataFrame([[
         age,
         gender,
         student_class,
@@ -128,7 +119,7 @@ if st.button("🚀 Predict Result"):
         science,
         english,
         previous,
-        final
+        final_percentage
     ]], columns=[
         "Age",
         "Gender",
@@ -145,29 +136,36 @@ if st.button("🚀 Predict Result"):
         "Final_Percentage"
     ])
 
-    data = scaler.transform(data)
+    input_data = scaler.transform(input_data)
 
     with st.spinner("Predicting..."):
-        time.sleep(2)
+        progress = st.progress(0)
 
-    prediction = model.predict(data)
+        for i in range(100):
+            time.sleep(0.01)
+            progress.progress(i + 1)
+
+    prediction = model.predict(input_data)
 
     st.divider()
 
     if prediction[0] == 1:
 
-        # Snow Celebration
         st.snow()
 
         st.markdown(
-            "<h1 style='text-align:center; color:green;'>🎉 Congratulations! 🎉</h1>",
+            "<h2 style='text-align:center;color:green;'>🎉 Congratulations! 🎉</h2>",
             unsafe_allow_html=True
         )
 
-        st.success("✅ The Student is Predicted to PASS 🏆")
+        st.success("✅ The Student is Predicted to PASS")
 
     else:
 
-        st.error("❌ The Student is Predicted to FAIL")
+        st.markdown(
+            "<h2 style='text-align:center;color:red;'>❌ Better Luck Next Time!</h2>",
+            unsafe_allow_html=True
+        )
 
-        st.warning("📚 Work harder and try again!")
+        st.error("❌ The Student is Predicted to FAIL")
+        st.warning("📚 Keep studying consistently and improve your performance!")
