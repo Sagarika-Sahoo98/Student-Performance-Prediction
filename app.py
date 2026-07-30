@@ -115,7 +115,7 @@ with col2:
 # ---------------- Prediction ----------------
 if st.button("🚀 Predict Result"):
 
-    df = pd.DataFrame([[
+    data = pd.DataFrame([[
         age,
         gender,
         student_class,
@@ -145,31 +145,29 @@ if st.button("🚀 Predict Result"):
         "Final_Percentage"
     ])
 
-    df = scaler.transform(df)
+    data = scaler.transform(data)
 
-    progress = st.progress(0)
+    with st.spinner("Predicting..."):
+        time.sleep(2)
 
-    for i in range(100):
-        time.sleep(0.01)
-        progress.progress(i + 1)
-
-    prediction = model.predict(df)
+    prediction = model.predict(data)
 
     st.divider()
 
     if prediction[0] == 1:
 
-        st_lottie(fireworks, height=280)
+        # Snow Celebration
+        st.snow()
 
         st.markdown(
-            "<h2 style='text-align:center;color:green;'>🎉 Congratulations! 🎉</h2>",
+            "<h1 style='text-align:center; color:green;'>🎉 Congratulations! 🎉</h1>",
             unsafe_allow_html=True
         )
 
-        st.success("✅ The Student is Predicted to PASS")
+        st.success("✅ The Student is Predicted to PASS 🏆")
 
     else:
 
         st.error("❌ The Student is Predicted to FAIL")
 
-        st.warning("📚 Keep practicing and work harder for better results.")
+        st.warning("📚 Work harder and try again!")
