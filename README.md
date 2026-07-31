@@ -3,6 +3,10 @@
 ## Overview
 This is a Machine Learning project that predicts whether a student will **Pass** or **Fail** based on academic performance and study-related features.
 
+## 🌐 Live Demo
+**Streamlit App:** [https://your-app-name.streamlit.app](https://student-performance-prediction-9zmdmg9prcnrzm4rxtgbw7.streamlit.app/)
+
+
 ## Technologies Used
 - Python
 - Streamlit
@@ -27,7 +31,6 @@ This is a Machine Learning project that predicts whether a student will **Pass**
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
-https://student-performance-prediction-9zmdmg9prcnrzm4rxtgbw7.streamlit.app/
 ```
 
 ## Author
