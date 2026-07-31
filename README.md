@@ -27,6 +27,7 @@ This is a Machine Learning project that predicts whether a student will **Pass**
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
+https://student-performance-prediction-9zmdmg9prcnrzm4rxtgbw7.streamlit.app/
 ```
 
 ## Author
